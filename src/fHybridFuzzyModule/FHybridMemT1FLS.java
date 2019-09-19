@@ -7,12 +7,14 @@
  */
 package fHybridFuzzyModule;
 
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
+
 import generic.Input;
 import generic.Output;
 import generic.Tuple;
 import tools.JMathPlotter;
-import type1.sets.T1MF_Gauangle;
-import type1.sets.T1MF_Gaussian;
 import type1.sets.T1MF_Interface;
 import type1.sets.T1MF_Trapezoidal;
 import type1.sets.T1MF_Triangular;
@@ -28,11 +30,14 @@ import type1.system.T1_Rulebase;
  * like to generate the applicable tip.
  * @author Christian Wagner
  */
-public class FHybridMemT1FLS 
+public class FHybridMemT1FLS
 {
     Input recencyOfAccess, readFrequency, writeFrequency;    //the inputs to the FLS
     Output promotion;             //the output of the FLS
     T1_Rulebase rulebase;   //the rulebase captures the entire FLS
+    
+    StringBuffer sbf;//String Buffer to select all the text that will be printed on a file
+    BufferedWriter bwr;
     
     public FHybridMemT1FLS()
     {
@@ -41,7 +46,6 @@ public class FHybridMemT1FLS
         readFrequency = new Input("Read Frequency Level", new Tuple(0,10)); 
         writeFrequency = new Input("Write Frequency Level", new Tuple(0,10));
         promotion = new Output("Promotion", new Tuple(0,10));               //a percentage for the tip
-        
         
         //ROA = Recency of Access
         
@@ -79,42 +83,50 @@ public class FHybridMemT1FLS
         T1_Consequent mediumPromotion = new T1_Consequent("MediumTip", mediumPromotionMF, promotion);
         T1_Consequent highPromotion = new T1_Consequent("HighTip", highPromotionMF, promotion);
 
-        /*if=0_0_1_1_2_0&then=0_0&
-         * if=0_0_1_1_2_1&then=0_2&
-         * if=0_0_1_1_2_2&then=0_2&
-         * if=0_0_1_2_2_0&then=0_0&
-         * if=0_0_1_2_2_1&then=0_1&
-         * if=0_0_1_2_2_2&then=0_2&if=0_1_1_0_2_0&then=0_0&if=0_1_1_0_2_1&then=0_1&if=0_1_1_0_2_2&then=0_2&if=0_1_1_1_2_0&then=0_0&if=0_1_1_1_2_1&then=0_1&if=0_1_1_1_2_2&then=0_2&if=0_1_1_2_2_0&then=0_0&if=0_1_1_2_2_1&then=0_1&if=0_1_1_2_2_2&then=0_2&if=0_2_1_0_2_0&then=0_0&if=0_2_1_0_2_1&then=0_0&if=0_2_1_0_2_2&then=0_1&if=0_2_1_1_2_0&then=0_0&if=0_2_1_1_2_1&then=0_0&if=0_2_1_1_2_2&then=0_1&if=0_2_1_2_2_0&then=0_0&if=0_2_1_2_2_1&then=0_0&if=0_2_1_2_2_2&then=0_1
-        
-        
-        */
         //Set up the rulebase and add rules
         rulebase = new T1_Rulebase(27);
         rulebase.addRule(new T1_Rule(new T1_Antecedent[]{highROA, lowReadFrequency, lowWriteFrequency}, lowPromotion));
-        rulebase.addRule(new T1_Rule(new T1_Antecedent[]{highROA, lowReadFrequency, mediumWriteFrequency}, lowPromotion));
-        rulebase.addRule(new T1_Rule(new T1_Antecedent[]{highROA, lowReadFrequency, highWriteFrequency}, lowPromotion));
-        rulebase.addRule(new T1_Rule(new T1_Antecedent[]{highROA, lowReadFrequency, lowWriteFrequency}, lowPromotion));
-        rulebase.addRule(new T1_Rule(new T1_Antecedent[]{highROA, lowReadFrequency, lowWriteFrequency}, lowPromotion));
-        rulebase.addRule(new T1_Rule(new T1_Antecedent[]{highROA, lowReadFrequency, lowWriteFrequency}, lowPromotion));
-        rulebase.addRule(new T1_Rule(new T1_Antecedent[]{highROA, lowReadFrequency, lowWriteFrequency}, lowPromotion));
-        rulebase.addRule(new T1_Rule(new T1_Antecedent[]{highROA, lowReadFrequency, lowWriteFrequency}, lowPromotion));
+        rulebase.addRule(new T1_Rule(new T1_Antecedent[]{highROA, lowReadFrequency, mediumWriteFrequency}, mediumPromotion));
+        rulebase.addRule(new T1_Rule(new T1_Antecedent[]{highROA, lowReadFrequency, highWriteFrequency}, highPromotion));
+        rulebase.addRule(new T1_Rule(new T1_Antecedent[]{highROA, mediumReadFrequency, lowWriteFrequency}, lowPromotion));
+        rulebase.addRule(new T1_Rule(new T1_Antecedent[]{highROA, mediumReadFrequency, mediumWriteFrequency}, highPromotion));
+        rulebase.addRule(new T1_Rule(new T1_Antecedent[]{highROA, mediumReadFrequency, highWriteFrequency}, highPromotion));
+        rulebase.addRule(new T1_Rule(new T1_Antecedent[]{highROA, highReadFrequency, lowWriteFrequency}, lowPromotion));
+        rulebase.addRule(new T1_Rule(new T1_Antecedent[]{highROA, highReadFrequency, mediumWriteFrequency}, mediumPromotion));
+        rulebase.addRule(new T1_Rule(new T1_Antecedent[]{highROA, highReadFrequency, highWriteFrequency}, highPromotion));
+        rulebase.addRule(new T1_Rule(new T1_Antecedent[]{mediumROA, lowReadFrequency, lowWriteFrequency}, lowPromotion));
+        rulebase.addRule(new T1_Rule(new T1_Antecedent[]{mediumROA, lowReadFrequency, mediumWriteFrequency}, mediumPromotion));
+        rulebase.addRule(new T1_Rule(new T1_Antecedent[]{mediumROA, lowReadFrequency, highWriteFrequency}, highPromotion));
+        rulebase.addRule(new T1_Rule(new T1_Antecedent[]{mediumROA, mediumReadFrequency, lowWriteFrequency}, lowPromotion));
+        rulebase.addRule(new T1_Rule(new T1_Antecedent[]{mediumROA, mediumReadFrequency, mediumWriteFrequency}, mediumPromotion));
+        rulebase.addRule(new T1_Rule(new T1_Antecedent[]{mediumROA, mediumReadFrequency, highWriteFrequency}, highPromotion));
+        rulebase.addRule(new T1_Rule(new T1_Antecedent[]{mediumROA, highReadFrequency, lowWriteFrequency}, lowPromotion));
+        rulebase.addRule(new T1_Rule(new T1_Antecedent[]{mediumROA, highReadFrequency, mediumWriteFrequency}, mediumPromotion));
+        rulebase.addRule(new T1_Rule(new T1_Antecedent[]{mediumROA, highReadFrequency, highWriteFrequency}, highPromotion));
+        rulebase.addRule(new T1_Rule(new T1_Antecedent[]{lowROA, lowReadFrequency, lowWriteFrequency}, lowPromotion));
+        rulebase.addRule(new T1_Rule(new T1_Antecedent[]{lowROA, lowReadFrequency, mediumWriteFrequency}, lowPromotion));
+        rulebase.addRule(new T1_Rule(new T1_Antecedent[]{lowROA, lowReadFrequency, highWriteFrequency}, mediumPromotion));
+        rulebase.addRule(new T1_Rule(new T1_Antecedent[]{lowROA, mediumReadFrequency, lowWriteFrequency}, lowPromotion));
+        rulebase.addRule(new T1_Rule(new T1_Antecedent[]{lowROA, mediumReadFrequency, mediumWriteFrequency}, lowPromotion));
+        rulebase.addRule(new T1_Rule(new T1_Antecedent[]{lowROA, mediumReadFrequency, highWriteFrequency}, mediumPromotion));
+        rulebase.addRule(new T1_Rule(new T1_Antecedent[]{lowROA, highReadFrequency, lowWriteFrequency}, lowPromotion));
+        rulebase.addRule(new T1_Rule(new T1_Antecedent[]{lowROA, highReadFrequency, mediumWriteFrequency}, lowPromotion));
+        rulebase.addRule(new T1_Rule(new T1_Antecedent[]{lowROA, highReadFrequency, highWriteFrequency}, mediumPromotion));
         
 
         
         //just an example of setting the discretisation level of an output - the usual level is 100
-        tip.setDiscretisationLevel(50);        
-        
-        //get some outputs
-        getTip(7,8);
-        
+        promotion.setDiscretisationLevel(100);        
+                
         //plot some sets, discretizing each input into 100 steps.
-        plotMFs("Food Quality Membership Functions", new T1MF_Interface[]{badFoodMF, greatFoodMF}, food.getDomain(), 100); 
-        plotMFs("Service Level Membership Functions", new T1MF_Interface[]{unfriendlyServiceMF, okServiceMF, friendlyServiceMF}, service.getDomain(), 100);
-        plotMFs("Level of Tip Membership Functions", new T1MF_Interface[]{lowTipMF, mediumTipMF, highTipMF}, tip.getDomain(), 100);
-       
+        plotMFs("Recency of Acess Membership Functions", new T1MF_Interface[]{lowROAMF, mediumROAMF, highROAMF}, recencyOfAccess.getDomain(), 100); 
+        plotMFs("Read Frequency Membership Functions", new T1MF_Interface[]{lowReadFrequencyMF, mediumReadFrequencyMF, highReadFrequencyMF}, readFrequency.getDomain(), 100);
+        plotMFs("Write Frequency Membership Functions", new T1MF_Interface[]{lowWriteFrequencyMF, mediumWriteFrequencyMF, highWriteFrequencyMF}, writeFrequency.getDomain(), 100);   
+        plotMFs("Promotion Membership Functions", new T1MF_Interface[]{lowPromotionMF, mediumPromotionMF, highPromotionMF}, promotion.getDomain(), 100);   
+        
         //plot control surface
         //do either height defuzzification (false) or centroid d. (true)
-        plotControlSurface(true, 100, 100);
+        //plotControlSurface(true, 100, 100);
         
         //print out the rules
         System.out.println("\n"+rulebase);        
@@ -125,18 +137,29 @@ public class FHybridMemT1FLS
      * @param foodQuality
      * @param serviceLevel 
      */
-    private void getTip(double foodQuality, double serviceLevel)
+    private String getPromotionValue(double recencyOfAccessLevel, double readFrequencyLevel, double writeFrequencyLevel)
     {
-        //first, set the inputs
-        food.setInput(foodQuality);
-        service.setInput(serviceLevel);
-        //now execute the FLS and print output
-        System.out.println("The food was: "+food.getInput());
-        System.out.println("The service was: "+service.getInput());
-        System.out.println("Using height defuzzification, the FLS recommends a tip of"
-                + "tip of: "+rulebase.evaluate(0).get(tip)); 
-        System.out.println("Using centroid defuzzification, the FLS recommends a tip of"
-                + "tip of: "+rulebase.evaluate(1).get(tip));     
+    	String outputString;
+       //first, set the inputs
+       recencyOfAccess.setInput(recencyOfAccessLevel);
+	   readFrequency.setInput(readFrequencyLevel);
+	   writeFrequency.setInput(writeFrequencyLevel);
+	   //now execute the FLS
+	   //Using height defuzzification:
+	   //rulebase.evaluate(0).get(promotion); 
+	   //Using centroid defuzzification
+	   //rulebase.evaluate(1).get(promotion)
+       /*System.out.println("ROA: "+ recencyOfAccess.getInput()
+       + " | RF: " + readFrequency.getInput()
+       + " | WF: " + writeFrequency.getInput() 
+       + " | Promotion: " + rulebase.evaluate(1).get(promotion)
+    		   ); 
+        */
+	   outputString = String.format("ROA: %f | RF: %f | WF: %f  | Promotion: %f \n",
+        recencyOfAccess.getInput(), readFrequency.getInput(), writeFrequency.getInput(), rulebase.evaluate(1).get(promotion));
+	   
+	   return outputString;
+    		   
     }
     
     private void plotMFs(String name, T1MF_Interface[] sets, Tuple xAxisRange, int discretizationLevel)
@@ -149,50 +172,20 @@ public class FHybridMemT1FLS
         plotter.show(name);
     }
 
-    private void plotControlSurface(boolean useCentroidDefuzzification, int input1Discs, int input2Discs)
+    public static void main (String args[]) throws IOException
     {
-        double output;
-        double[] x = new double[input1Discs];
-        double[] y = new double[input2Discs];
-        double[][] z = new double[y.length][x.length];
-        double incrX, incrY;
-        incrX = food.getDomain().getSize()/(input1Discs-1.0);
-        incrY = service.getDomain().getSize()/(input2Discs-1.0);
-
-        //first, get the values
-        for(int currentX=0; currentX<input1Discs; currentX++)
-        {
-            x[currentX] = currentX * incrX;        
-        }
-        for(int currentY=0; currentY<input2Discs; currentY++)
-        {
-            y[currentY] = currentY * incrY;
-        }
+    	FileWriter fw = new FileWriter("output_1.txt");
+        BufferedWriter writeFileBuffer = new BufferedWriter(fw);
+        FHybridMemT1FLS fHybridSystem = new FHybridMemT1FLS();
         
-        for(int currentX=0; currentX<input1Discs; currentX++)
-        {
-            food.setInput(x[currentX]);
-            for(int currentY=0; currentY<input2Discs; currentY++)
-            {
-                service.setInput(y[currentY]);
-                if(useCentroidDefuzzification)
-                    output = rulebase.evaluate(1).get(tip);
-                else
-                    output = rulebase.evaluate(0).get(tip);
-                z[currentY][currentX] = output;
-            }    
+        //get some outputs
+        for(int i = 0; i < 10; i++) {
+        	for(int j = 0; j < 10; j++) {
+        		for(int k = 0; k < 10; k++)
+        			writeFileBuffer.write(fHybridSystem.getPromotionValue(i,j,k));
+        	}
         }
-        
-        //now do the plotting
-        JMathPlotter plotter = new JMathPlotter(17, 17, 14);
-        plotter.plotControlSurface("Control Surface",
-                new String[]{food.getName(), service.getName(), "Tip"}, x, y, z, new Tuple(0.0,30.0), true);   
-       plotter.show("Type-1 Fuzzy Logic System Control Surface for Tipping Example");
-    }
-    
-    public static void main (String args[])
-    {
-        new SimpleT1FLS();
+       writeFileBuffer.close();
     }
 }
 
