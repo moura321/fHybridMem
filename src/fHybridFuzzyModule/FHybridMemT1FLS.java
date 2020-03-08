@@ -23,6 +23,11 @@ import type1.system.T1_Consequent;
 import type1.system.T1_Rule;
 import type1.system.T1_Rulebase;
 
+import fHybridFuzzyModule.JavaServer;
+import java.util.Hashtable;
+import helma.xmlrpc.*;
+
+
 /**
  * A simple example of a type-1 FLS based on the "How much to tip the waiter"
  *  scenario.
@@ -119,17 +124,17 @@ public class FHybridMemT1FLS
         promotion.setDiscretisationLevel(100);        
                 
         //plot some sets, discretizing each input into 100 steps.
-        plotMFs("Recency of Acess Membership Functions", new T1MF_Interface[]{lowROAMF, mediumROAMF, highROAMF}, recencyOfAccess.getDomain(), 100); 
-        plotMFs("Read Frequency Membership Functions", new T1MF_Interface[]{lowReadFrequencyMF, mediumReadFrequencyMF, highReadFrequencyMF}, readFrequency.getDomain(), 100);
-        plotMFs("Write Frequency Membership Functions", new T1MF_Interface[]{lowWriteFrequencyMF, mediumWriteFrequencyMF, highWriteFrequencyMF}, writeFrequency.getDomain(), 100);   
-        plotMFs("Promotion Membership Functions", new T1MF_Interface[]{lowPromotionMF, mediumPromotionMF, highPromotionMF}, promotion.getDomain(), 100);   
+        //plotMFs("Recency of Acess Membership Functions", new T1MF_Interface[]{lowROAMF, mediumROAMF, highROAMF}, recencyOfAccess.getDomain(), 100); 
+        //plotMFs("Read Frequency Membership Functions", new T1MF_Interface[]{lowReadFrequencyMF, mediumReadFrequencyMF, highReadFrequencyMF}, readFrequency.getDomain(), 100);
+        //plotMFs("Write Frequency Membership Functions", new T1MF_Interface[]{lowWriteFrequencyMF, mediumWriteFrequencyMF, highWriteFrequencyMF}, writeFrequency.getDomain(), 100);   
+        //plotMFs("Promotion Membership Functions", new T1MF_Interface[]{lowPromotionMF, mediumPromotionMF, highPromotionMF}, promotion.getDomain(), 100);   
         
         //plot control surface
         //do either height defuzzification (false) or centroid d. (true)
         //plotControlSurface(true, 100, 100);
         
         //print out the rules
-        System.out.println("\n"+rulebase);        
+        //System.out.println("\n"+rulebase);        
     }
     
     /**
@@ -137,7 +142,7 @@ public class FHybridMemT1FLS
      * @param foodQuality
      * @param serviceLevel 
      */
-    private String getPromotionValue(double recencyOfAccessLevel, double readFrequencyLevel, double writeFrequencyLevel)
+    public Double getPromotionValue(double recencyOfAccessLevel, double readFrequencyLevel, double writeFrequencyLevel)
     {
     	String outputString;
        //first, set the inputs
@@ -153,12 +158,15 @@ public class FHybridMemT1FLS
        + " | RF: " + readFrequency.getInput()
        + " | WF: " + writeFrequency.getInput() 
        + " | Promotion: " + rulebase.evaluate(1).get(promotion)
-    		   ); 
-        */
-	   outputString = String.format("ROA: %f | RF: %f | WF: %f  | Promotion: %f \n",
-        recencyOfAccess.getInput(), readFrequency.getInput(), writeFrequency.getInput(), rulebase.evaluate(1).get(promotion));
-	   
-	   return outputString;
+    		   ); */
+        
+      
+        //outputString = String.format("ROA: %f | RF: %f | WF: %f  | Promotion: %f \n",
+        //recencyOfAccess.getInput(), readFrequency.getInput(), writeFrequency.getInput(), rulebase.evaluate(1).get(promotion));
+       
+        
+       //return outputString;
+       return rulebase.evaluate(1).get(promotion);
     		   
     }
     
@@ -172,20 +180,29 @@ public class FHybridMemT1FLS
         plotter.show(name);
     }
 
-    public static void main (String args[]) throws IOException
+    public static void main (String [] args) throws IOException
     {
-    	FileWriter fw = new FileWriter("output_1.txt");
+    	/*FileWriter fw = new FileWriter("output_1.txt");
         BufferedWriter writeFileBuffer = new BufferedWriter(fw);
         FHybridMemT1FLS fHybridSystem = new FHybridMemT1FLS();
-        
+
         //get some outputs
         for(int i = 0; i < 10; i++) {
         	for(int j = 0; j < 10; j++) {
-        		for(int k = 0; k < 10; k++)
-        			writeFileBuffer.write(fHybridSystem.getPromotionValue(i,j,k));
+                for(int k = 0; k < 10; k++)
+        			writeFileBuffer.write(""+fHybridSystem.getPromotionValue(i,j,k));
         	}
         }
-       writeFileBuffer.close();
+       writeFileBuffer.close();*/
+
+     
+        try {
+            WebServer server = new WebServer(8080);
+            server.addHandler("fhm", new JavaServer());
+
+        } catch (Exception exception) {
+            System.err.println("JavaServer: " + exception.toString());
+        }
     }
 }
 

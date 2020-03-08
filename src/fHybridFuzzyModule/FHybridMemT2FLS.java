@@ -194,7 +194,7 @@ public class FHybridMemT2FLS
         //plotControlSurface(false, 100, 100);
         
         //print out the rules
-        System.out.println("\n"+rulebase);        
+        //System.out.println("\n"+rulebase);        
     }
     
     /**
@@ -202,7 +202,7 @@ public class FHybridMemT2FLS
      * @param foodQuality
      * @param serviceLevel 
      */
-    private String getPromotionValue(double recencyOfAccessLevel, double readFrequencyLevel, double writeFrequencyLevel)
+    public Double getPromotionValue(double recencyOfAccessLevel, double readFrequencyLevel, double writeFrequencyLevel)
     {
     	String outputString;
        //first, set the inputs
@@ -220,10 +220,10 @@ public class FHybridMemT2FLS
        + " | Promotion: " + rulebase.evaluate(1).get(promotion)
     		   ); 
         */
-	   outputString = String.format("ROA: %f | RF: %f | WF: %f  | Promotion: %f \n",
-        recencyOfAccess.getInput(), readFrequency.getInput(), writeFrequency.getInput(), rulebase.evaluate(1).get(promotion));
+	  // outputString = String.format("ROA: %f | RF: %f | WF: %f  | Promotion: %f \n",
+      //  recencyOfAccess.getInput(), readFrequency.getInput(), writeFrequency.getInput(), rulebase.evaluate(1).get(promotion));
 	   
-	   return outputString;
+	   return rulebase.evaluate(1).get(promotion);
     		   
     }
        
