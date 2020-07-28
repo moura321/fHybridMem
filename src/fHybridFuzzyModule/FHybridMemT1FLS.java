@@ -55,9 +55,9 @@ public class FHybridMemT1FLS
         //ROA = Recency of Access
         
         //Set up the membership functions (MFs) for each input and output
-        T1MF_Trapezoidal highROAMF = new T1MF_Trapezoidal("MF for High Recency of Access", new double[] {0, 0, 2, 4});
+        T1MF_Trapezoidal lowROAMF = new T1MF_Trapezoidal("MF for High Recency of Access", new double[] {0, 0, 2, 4});
         T1MF_Triangular mediumROAMF = new T1MF_Triangular("MF for Medium Recency of Access", 2, 4, 6);
-        T1MF_Trapezoidal lowROAMF = new T1MF_Trapezoidal("MF for Low Recency of Access", new double[] {4, 6, 10, 10});
+        T1MF_Trapezoidal highROAMF = new T1MF_Trapezoidal("MF for Low Recency of Access", new double[] {4, 6, 10, 10});
 
         T1MF_Trapezoidal lowReadFrequencyMF = new T1MF_Trapezoidal("MF for Low Read Frequency", new double[] {0, 0, 2, 5});
         T1MF_Trapezoidal mediumReadFrequencyMF = new T1MF_Trapezoidal("MF for Medium Read Frequency", new double[] {2, 4, 6, 8});
@@ -92,7 +92,9 @@ public class FHybridMemT1FLS
         rulebase = new T1_Rulebase(27);
         rulebase.addRule(new T1_Rule(new T1_Antecedent[]{highROA, lowReadFrequency, lowWriteFrequency}, lowPromotion));
         rulebase.addRule(new T1_Rule(new T1_Antecedent[]{highROA, lowReadFrequency, mediumWriteFrequency}, mediumPromotion));
+
         rulebase.addRule(new T1_Rule(new T1_Antecedent[]{highROA, lowReadFrequency, highWriteFrequency}, highPromotion));
+
         rulebase.addRule(new T1_Rule(new T1_Antecedent[]{highROA, mediumReadFrequency, lowWriteFrequency}, lowPromotion));
         rulebase.addRule(new T1_Rule(new T1_Antecedent[]{highROA, mediumReadFrequency, mediumWriteFrequency}, highPromotion));
         rulebase.addRule(new T1_Rule(new T1_Antecedent[]{highROA, mediumReadFrequency, highWriteFrequency}, highPromotion));
@@ -110,7 +112,9 @@ public class FHybridMemT1FLS
         rulebase.addRule(new T1_Rule(new T1_Antecedent[]{mediumROA, highReadFrequency, highWriteFrequency}, highPromotion));
         rulebase.addRule(new T1_Rule(new T1_Antecedent[]{lowROA, lowReadFrequency, lowWriteFrequency}, lowPromotion));
         rulebase.addRule(new T1_Rule(new T1_Antecedent[]{lowROA, lowReadFrequency, mediumWriteFrequency}, lowPromotion));
+
         rulebase.addRule(new T1_Rule(new T1_Antecedent[]{lowROA, lowReadFrequency, highWriteFrequency}, mediumPromotion));
+
         rulebase.addRule(new T1_Rule(new T1_Antecedent[]{lowROA, mediumReadFrequency, lowWriteFrequency}, lowPromotion));
         rulebase.addRule(new T1_Rule(new T1_Antecedent[]{lowROA, mediumReadFrequency, mediumWriteFrequency}, lowPromotion));
         rulebase.addRule(new T1_Rule(new T1_Antecedent[]{lowROA, mediumReadFrequency, highWriteFrequency}, mediumPromotion));

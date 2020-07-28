@@ -49,28 +49,23 @@ public class FHybridMemT2FLS
     	recencyOfAccess = new Input("Recency of Access Level", new Tuple(0,10));
         readFrequency = new Input("Read Frequency Level", new Tuple(0,10)); 
         writeFrequency = new Input("Write Frequency Level", new Tuple(0,10));
-        promotion = new Output("Promotion", new Tuple(0,10));               //a percentage for the tip
+        promotion = new Output("Promotion", new Tuple(0,100));               //a percentage for the tip
         
-        //ROA = Recency of Access
-        
-        //Set up the membership functions (MFs) for each input and output
-        // Pontos da equação do matlab que são da upper: 1, 2, 7, 8
-        // Pontos da equação do matlab que são da lower: 5, 6, 3, 4
-       
-        //High
-        T1MF_Trapezoidal highROAUMF = new T1MF_Trapezoidal("Upper MF for High Recency of Access", new double[] {0, 0, 2.5, 4.5});
-        T1MF_Trapezoidal highROALMF = new T1MF_Trapezoidal("Lower MF for High Recency of Access", new double[] {0, 0, 1.5, 3.5}, new double[] {0.9, 0.9});
-        IntervalT2MF_Trapezoidal highROAMF = new IntervalT2MF_Trapezoidal("IT2MF for High Recency of Access", highROAUMF, highROALMF);
+        //Low Functions using the article functions with c constant equal to 0.4
+        //T1MF_Trapezoidal("MF for High Recency of Access", new double[] {2, 4, 6, 8});
+        T1MF_Trapezoidal lowROAUMF = new T1MF_Trapezoidal("Upper MF for High Recency of Access", new double[] {0, 0, 2.4, 4.4});
+        T1MF_Trapezoidal lowROALMF = new T1MF_Trapezoidal("Lower MF for High Recency of Access", new double[] {0, 0, 2.4, 3.6}, new double[] {0.6, 0.6});
+        IntervalT2MF_Trapezoidal lowROAMF = new IntervalT2MF_Trapezoidal("IT2MF for Low Recency of Access", lowROAUMF, lowROALMF);
         
         //Medium
-        T1MF_Trapezoidal mediumROAUMF = new T1MF_Trapezoidal("Upper MF for Medium Recency of Access", new double[] {1.5, 3.5, 4.5, 6.5});
-        T1MF_Trapezoidal mediumROALMF = new T1MF_Trapezoidal("Lower MF for Medium Recency of Access", new double[] {2.5, 3.99, 4.01, 5.5}, new double[] {0.8, 0.8});
+        T1MF_Trapezoidal mediumROAUMF = new T1MF_Trapezoidal("Upper MF for Medium Recency of Access", new double[] {1.6, 3.6, 4.4, 6.4});
+        T1MF_Trapezoidal mediumROALMF = new T1MF_Trapezoidal("Lower MF for Medium Recency of Access", new double[] {2.4, 3.6, 4.4, 5.6}, new double[] {0.6, 0.6});
         IntervalT2MF_Trapezoidal mediumROAMF = new IntervalT2MF_Trapezoidal("IT2MF for Medium Recency of Access", mediumROAUMF, mediumROALMF);
-          
-        //Low
-        T1MF_Trapezoidal lowROAUMF = new T1MF_Trapezoidal("Upper MF for Low Recency of Access", new double[] {3.5, 5.5, 10, 10});
-        T1MF_Trapezoidal lowROALMF = new T1MF_Trapezoidal("LowerMF for Low Recency of Access", new double[] {4.5, 6.5, 10, 10}, new double[] {0.9, 0.9});
-        IntervalT2MF_Trapezoidal lowROAMF = new IntervalT2MF_Trapezoidal("IT2MF for Low Recency of Access", lowROAUMF, lowROALMF);
+        
+        //High
+        T1MF_Trapezoidal highROAUMF = new T1MF_Trapezoidal("Upper MF for Low Recency of Access", new double[] {3.6, 5.6, 10, 10});
+        T1MF_Trapezoidal highROALMF = new T1MF_Trapezoidal("Lower MF for Low Recency of Access", new double[] {4.4, 5.6, 10, 10}, new double[] {0.6, 0.6});
+        IntervalT2MF_Trapezoidal highROAMF = new IntervalT2MF_Trapezoidal("IT2MF for High Recency of Access", highROAUMF, highROALMF);
 
         //plotMFs("Recency of Access Membership Functions", new IntervalT2MF_Interface[]{highROAMF, mediumROAMF, lowROAMF}, 100);        
         
@@ -78,62 +73,64 @@ public class FHybridMemT2FLS
         // Pontos da equação do matlab que são da upper: 1, 2, 7, 8 (Substituindo valores acima de 10 e abaixo de 0 pelos limites da variável)
         // Pontos da equação do matlab que são da lower: 5, 6, 3, 4
         //Low
-        T1MF_Trapezoidal lowReadFrequencyUMF = new T1MF_Trapezoidal("Upper MF for Low Read Frequency", new double[] {0, 0, 2.5, 5.5});
-        T1MF_Trapezoidal lowReadFrequencyLMF = new T1MF_Trapezoidal("Lower MF for Low Read Frequency", new double[] {0, 0, 1.5, 4.5}, new double[] {0.9, 0.9});
+       
+        T1MF_Trapezoidal lowReadFrequencyUMF = new T1MF_Trapezoidal("Upper MF for Low Read Frequency", new double[] {0, 0, 2.6, 5.6});
+        T1MF_Trapezoidal lowReadFrequencyLMF = new T1MF_Trapezoidal("Lower MF for Low Read Frequency", new double[] {0, 0, 2.6, 4.4}, new double[] {0.6, 0.6});
         IntervalT2MF_Trapezoidal lowReadFrequencyMF = new IntervalT2MF_Trapezoidal("IT2MF for Low Read Frequency", lowReadFrequencyUMF, lowReadFrequencyLMF);
         
         //Medium
-        T1MF_Trapezoidal mediumReadFrequencyUMF = new T1MF_Trapezoidal("Upper MF for Medium Read Frequency", new double[] {1.5, 3.5, 6.5, 8.5});
-        T1MF_Trapezoidal mediumReadFrequencyLMF = new T1MF_Trapezoidal("Lower MF for Medium Read Frequency", new double[] {2.5, 4.5, 5.5, 7.5}, new double[] {0.9, 0.9});
+        T1MF_Trapezoidal mediumReadFrequencyUMF = new T1MF_Trapezoidal("Upper MF for Medium Read Frequency", new double[] {1.6, 3.6, 6.4, 8.4});
+        T1MF_Trapezoidal mediumReadFrequencyLMF = new T1MF_Trapezoidal("Lower MF for Medium Read Frequency", new double[] {2.4, 3.6, 6.4, 7.6}, new double[] {0.6, 0.6});
         IntervalT2MF_Trapezoidal mediumReadFrequencyMF = new IntervalT2MF_Trapezoidal("IT2MF for Medium Read Frequency", mediumReadFrequencyUMF, mediumReadFrequencyLMF);
         
         //High
-        T1MF_Trapezoidal highReadFrequencyUMF = new T1MF_Trapezoidal("Upper MF for High Read Frequency", new double[] {4.5, 7.5, 10, 10});
-        T1MF_Trapezoidal highReadFrequencyLMF = new T1MF_Trapezoidal("Lower MF for High Read Frequency", new double[] {5.5, 8.5, 10, 10}, new double[] {0.9, 0.9});
+        T1MF_Trapezoidal highReadFrequencyUMF = new T1MF_Trapezoidal("Upper MF for High Read Frequency", new double[] {4.4, 7.4, 10, 10});
+        T1MF_Trapezoidal highReadFrequencyLMF = new T1MF_Trapezoidal("Lower MF for High Read Frequency", new double[] {5.6, 7.4, 10, 10}, new double[] {0.6, 0.6});
         IntervalT2MF_Trapezoidal highReadFrequencyMF = new IntervalT2MF_Trapezoidal("IT2MF for High Read Frequency", highReadFrequencyUMF, highReadFrequencyLMF);
         
         //plotMFs("Read Frequency Membership Functions", new IntervalT2MF_Interface[]{lowReadFrequencyMF, mediumReadFrequencyMF, highReadFrequencyMF}, 100); 
-        
+                
         //Set up the membership functions (MFs) for each input and output
         // Pontos da equação do matlab que são da upper: 1, 2, 7, 8 (Substituindo valores acima de 10 e abaixo de 0 pelos limites da variável)
         // Pontos da equação do matlab que são da lower: 5, 6, 3, 4
         //Low
-        T1MF_Trapezoidal lowWriteFrequencyUMF = new T1MF_Trapezoidal("Upper MF for Low Write Frequency", new double[] {0, 0, 2.5, 5.5});
-        T1MF_Trapezoidal lowWriteFrequencyLMF = new T1MF_Trapezoidal("Lower MF for Low Write Frequency", new double[] {0, 0, 1.5, 4.5}, new double[] {0.9, 0.9});
+        T1MF_Trapezoidal lowWriteFrequencyUMF = new T1MF_Trapezoidal("Upper MF for Low Write Frequency", new double[] {0, 0, 2.6, 5.6});
+        T1MF_Trapezoidal lowWriteFrequencyLMF = new T1MF_Trapezoidal("Lower MF for Low Write Frequency", new double[] {0, 0, 2.6, 4.4}, new double[] {0.6, 0.6});
         IntervalT2MF_Trapezoidal lowWriteFrequencyMF = new IntervalT2MF_Trapezoidal("IT2MF for Low Write Frequency", lowWriteFrequencyUMF, lowWriteFrequencyLMF);
         
         //Medium
-        T1MF_Trapezoidal mediumWriteFrequencyUMF = new T1MF_Trapezoidal("Upper MF for Medium Write Frequency", new double[] {1.5, 3.5, 6.5, 8.5});
-        T1MF_Trapezoidal mediumWriteFrequencyLMF = new T1MF_Trapezoidal("Lower MF for Medium Write Frequency", new double[] {2.5, 4.5, 5.5, 7.5}, new double[] {0.9, 0.9});
+        T1MF_Trapezoidal mediumWriteFrequencyUMF = new T1MF_Trapezoidal("Upper MF for Medium Write Frequency", new double[] {1.6, 3.6, 6.4, 8.4});
+        T1MF_Trapezoidal mediumWriteFrequencyLMF = new T1MF_Trapezoidal("Lower MF for Medium Write Frequency", new double[] {2.4, 3.6, 6.4, 7.6}, new double[] {0.6, 0.6});
         IntervalT2MF_Trapezoidal mediumWriteFrequencyMF = new IntervalT2MF_Trapezoidal("IT2MF for Medium Write Frequency", mediumWriteFrequencyUMF, mediumWriteFrequencyLMF);
         
         //High
-        T1MF_Trapezoidal highWriteFrequencyUMF = new T1MF_Trapezoidal("Upper MF for High Write Frequency", new double[] {4.5, 7.5, 10, 10});
-        T1MF_Trapezoidal highWriteFrequencyLMF = new T1MF_Trapezoidal("Lower MF for High Write Frequency", new double[] {5.5, 8.5, 10, 10}, new double[] {0.9, 0.9});
+        T1MF_Trapezoidal highWriteFrequencyUMF = new T1MF_Trapezoidal("Upper MF for High Write Frequency", new double[] {4.4, 7.4, 10, 10});
+        T1MF_Trapezoidal highWriteFrequencyLMF = new T1MF_Trapezoidal("Lower MF for High Write Frequency", new double[] {5.6, 7.4, 10, 10}, new double[] {0.6, 0.6});
         IntervalT2MF_Trapezoidal highWriteFrequencyMF = new IntervalT2MF_Trapezoidal("IT2MF for High Write Frequency", highWriteFrequencyUMF, highWriteFrequencyLMF);
         
         //plotMFs("Write Frequency Membership Functions", new IntervalT2MF_Interface[]{lowWriteFrequencyMF, mediumWriteFrequencyMF, highWriteFrequencyMF}, 100); 
     
+        
         //Set up the membership functions (MFs) for each input and output
         // Pontos da equação do matlab que são da upper: 1, 2, 7, 8 (Substituindo valores acima de 10 e abaixo de 0 pelos limites da variável)
         // Pontos da equação do matlab que são da lower: 5, 6, 3, 4
         //Low
-        T1MF_Trapezoidal lowPromotionUMF = new T1MF_Trapezoidal("Upper MF for Low Promotion", new double[] {0, 0, 0.5, 5.5});
-        T1MF_Trapezoidal lowPromotionLMF = new T1MF_Trapezoidal("Lower MF for Low Promotion", new double[] {0, 0, 0, 4.5}, new double[] {0.9, 0.9});
+        T1MF_Trapezoidal lowPromotionUMF = new T1MF_Trapezoidal("Upper MF for Low Promotion", new double[] {0, 0, 1, 6});
+        T1MF_Trapezoidal lowPromotionLMF = new T1MF_Trapezoidal("Lower MF for Low Promotion", new double[] {0, 0, 1, 4}, new double[] {0.6, 0.6});
         IntervalT2MF_Trapezoidal lowPromotionMF = new IntervalT2MF_Trapezoidal("IT2MF for Low Promotion", lowPromotionUMF, lowPromotionLMF);
              
         //Average
-        T1MF_Trapezoidal averagePromotionUMF = new T1MF_Trapezoidal("Upper MF for Average Promotion", new double[] {-0.5, 4.5, 5.5, 10.5});
-        T1MF_Trapezoidal averagePromotionLMF = new T1MF_Trapezoidal("Lower MF for Average Promotion", new double[] {0.5, 4.5, 5.5, 9.5}, new double[] {0.9, 0.9});
+        T1MF_Trapezoidal averagePromotionUMF = new T1MF_Trapezoidal("Upper MF for Average Promotion", new double[] {-1, 4, 6, 11});
+        T1MF_Trapezoidal averagePromotionLMF = new T1MF_Trapezoidal("Lower MF for Average Promotion", new double[] {1, 4, 6, 9}, new double[] {0.6, 0.6});
         IntervalT2MF_Trapezoidal averagePromotionMF = new IntervalT2MF_Trapezoidal("IT2MF for Average Promotion", averagePromotionUMF, averagePromotionLMF);
     
         //High
-        T1MF_Trapezoidal highPromotionUMF = new T1MF_Trapezoidal("Upper MF for High Promotion", new double[] {4.5, 9.5, 12.5, 14});
-        T1MF_Trapezoidal highPromotionLMF = new T1MF_Trapezoidal("Lower MF for High Promotion", new double[] {5.5, 10.5, 11.5, 13}, new double[] {0.9, 0.9});
+        T1MF_Trapezoidal highPromotionUMF = new T1MF_Trapezoidal("Upper MF for High Promotion", new double[] {4, 9, 10, 10});
+        T1MF_Trapezoidal highPromotionLMF = new T1MF_Trapezoidal("Lower MF for High Promotion", new double[] {6, 9, 10, 10}, new double[] {0.6, 0.6});
         IntervalT2MF_Trapezoidal highPromotionMF = new IntervalT2MF_Trapezoidal("IT2MF for High Promotion", highPromotionUMF, highPromotionLMF);
         
         //plotMFs("Promotion Membership Functions", new IntervalT2MF_Interface[]{lowPromotionMF, averagePromotionMF, highPromotionMF}, 100); 
-
+        
         //Set up the antecedents and consequents - note how the inputs are associated...
         IT2_Antecedent highROA = new IT2_Antecedent("HighROA", highROAMF, recencyOfAccess);
         IT2_Antecedent mediumROA = new IT2_Antecedent("MediumROA", mediumROAMF, recencyOfAccess);
@@ -180,15 +177,18 @@ public class FHybridMemT2FLS
         rulebase.addRule(new IT2_Rule(new IT2_Antecedent[]{lowROA, highReadFrequency, lowWriteFrequency}, lowPromotion));
         rulebase.addRule(new IT2_Rule(new IT2_Antecedent[]{lowROA, highReadFrequency, mediumWriteFrequency}, lowPromotion));
         rulebase.addRule(new IT2_Rule(new IT2_Antecedent[]{lowROA, highReadFrequency, highWriteFrequency}, mediumPromotion));
-        
-
+       
         
         //just an example of setting the discretisation level of an output - the usual level is 100
-        promotion.setDiscretisationLevel(100);        
-                
+        promotion.setDiscretisationLevel(1000);        
+            
         //plot some sets, discretizing each input into 100 steps.
-        //plotMFs("Recency of Acess Membership Functions", new T1MF_Interface[]{lowROAMF, mediumROAMF, highROAMF}, recencyOfAccess.getDomain(), 100); 
-
+        //plotMFs("Recency of Access Membership Functions", new IntervalT2MF_Interface[]{highROAMF, mediumROAMF, lowROAMF}, 1000);        
+        //plotMFs("Read Frequency Membership Functions", new IntervalT2MF_Interface[]{lowReadFrequencyMF, mediumReadFrequencyMF, highReadFrequencyMF}, 1000); 
+        //plotMFs("Write Frequency Membership Functions", new IntervalT2MF_Interface[]{lowWriteFrequencyMF, mediumWriteFrequencyMF, highWriteFrequencyMF}, 1000); 
+        //plotMFs("Promotion Membership Functions", new IntervalT2MF_Interface[]{lowPromotionMF, averagePromotionMF, highPromotionMF}, 1000); 
+        
+        
         //plot control surface
         //do either height defuzzification (false) or centroid d. (true)
         //plotControlSurface(false, 100, 100);

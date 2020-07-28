@@ -24,6 +24,7 @@ public class JavaServer {
         double recommendation_value=0;
         int recommendation_address=0;
         Hashtable result = new Hashtable();
+        //FHybridMemT1FLS fHybridSystem = new FHybridMemT1FLS();
         FHybridMemT2FLS fHybridSystem = new FHybridMemT2FLS();
 
         String[] pages = s.split("\n");
